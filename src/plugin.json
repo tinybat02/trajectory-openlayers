@@ -1,0 +1,21 @@
+{
+  "type": "panel",
+  "name": "Trajectory",
+  "id": "id-trajectory-openlayers",
+  "dataFormats": ["table"],
+  "info": {
+    "description": "Trajectory of users",
+    "author": {
+      "name": "Nam Le"
+    },
+    "keywords": ["openlayers", "trajectory"],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "6.3.x",
+    "plugins": []
+  }
+}
