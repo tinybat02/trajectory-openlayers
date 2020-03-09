@@ -179,7 +179,7 @@ export class MainPanel extends PureComponent<Props> {
             }),
           }),
         };
-        const routeData = this.perUser[this.state.current].slice(-3).map(item => fromLonLat(item));
+        const routeData = this.perUser[this.state.current].map(item => fromLonLat(item));
         this.route = new VectorLayer({
           source: new VectorSource({
             features: [
