@@ -14,23 +14,28 @@ import { defaults, DragPan, MouseWheelZoom } from 'ol/interaction';
 import { platformModifierKeyOnly } from 'ol/events/condition';
 import nanoid from 'nanoid';
 import 'ol/ol.css';
+import { processReceivedData } from './utils/helperFunc';
 
 interface Props extends PanelProps<MapOptions> {}
 interface State {
   options: string[];
   current: string;
+  vendorName: string;
 }
 
 export class MainPanel extends PureComponent<Props> {
   id = 'id' + nanoid();
   map: Map;
   randomTile: TileLayer;
-  perUser: { [key: string]: [number, number][] };
+  perUserRoute: { [key: string]: [number, number][] };
+  perUserRouteRadius: { [key: string]: number[] };
+  perUserVendorName: { [key: string]: string };
   route: VectorLayer;
 
   state: State = {
     options: [],
     current: 'None',
+    vendorName: '',
   };
 
   componentDidMount() {
@@ -85,18 +90,13 @@ export class MainPanel extends PureComponent<Props> {
         target: this.id,
       });
 
-      const perUser: { [key: string]: [number, number][] } = {};
+      const { perUserRoute, perUserRouteRadius, perUserVendorName } = processReceivedData(this.props.data.series[0].length, fields);
 
-      for (let i = 0; i < this.props.data.series[0].length; i++) {
-        (perUser[fields[0].values.buffer[i]] = perUser[fields[0].values.buffer[i]] || []).push([
-          fields[2].values.buffer[i],
-          fields[1].values.buffer[i],
-        ]);
-      }
-
-      this.perUser = perUser;
+      this.perUserRoute = perUserRoute;
+      this.perUserRouteRadius = perUserRouteRadius;
+      this.perUserVendorName = perUserVendorName;
       this.setState({
-        options: Object.keys(this.perUser),
+        options: Object.keys(this.perUserRoute),
       });
     }
 
@@ -122,17 +122,12 @@ export class MainPanel extends PureComponent<Props> {
         });
       }
 
-      const perUser: { [key: string]: [number, number][] } = {};
+      const { perUserRoute, perUserRouteRadius, perUserVendorName } = processReceivedData(this.props.data.series[0].length, newFields);
 
-      for (let i = 0; i < this.props.data.series[0].length; i++) {
-        (perUser[newFields[0].values.buffer[i]] = perUser[newFields[0].values.buffer[i]] || []).push([
-          newFields[2].values.buffer[i],
-          newFields[1].values.buffer[i],
-        ]);
-      }
-
-      this.perUser = perUser;
-      this.setState({ options: Object.keys(this.perUser) });
+      this.perUserRoute = perUserRoute;
+      this.perUserRouteRadius = perUserRouteRadius;
+      this.perUserVendorName = perUserVendorName;
+      this.setState({ options: Object.keys(this.perUserRoute) });
     }
 
     if (prevProps.options.tile_url !== this.props.options.tile_url) {
@@ -159,7 +154,7 @@ export class MainPanel extends PureComponent<Props> {
       this.route && this.map.removeLayer(this.route);
 
       if (this.state.current !== 'None') {
-        const styles: { [key: string]: Style } = {
+        /*         const styles: { [key: string]: Style } = {
           route: new Style({
             stroke: new Stroke({
               color: '#0080ff',
@@ -201,6 +196,37 @@ export class MainPanel extends PureComponent<Props> {
           style: feature => {
             return styles[feature.get('type')];
           },
+        }); */
+        const routeData = this.perUserRoute[this.state.current].map(item => fromLonLat(item));
+        const routeRadiusData = this.perUserRouteRadius[this.state.current];
+
+        const routeFeature = new Feature(new LineString(routeData));
+        routeFeature.setStyle(
+          new Style({
+            stroke: new Stroke({
+              color: '#0080ff',
+              width: 2,
+            }),
+          })
+        );
+
+        const pointFeatures = routeData.map((coordinate, index) => {
+          const singlePoint = new Feature(new Point(coordinate));
+          singlePoint.setStyle(
+            new Style({
+              image: new Circle({
+                radius: routeRadiusData[index],
+                fill: new Fill({ color: '#26de00' }),
+              }),
+            })
+          );
+          return singlePoint;
+        });
+
+        this.route = new VectorLayer({
+          source: new VectorSource({
+            features: [routeFeature, ...pointFeatures],
+          }),
         });
 
         this.map.addLayer(this.route);

@@ -52005,6 +52005,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(nanoid__WEBPACK_IMPORTED_MODULE_13__);
 /* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ol/ol.css */ "../node_modules/ol/ol.css");
 /* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(ol_ol_css__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var _utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./utils/helperFunc */ "./utils/helperFunc.ts");
+
 
 
 
@@ -52032,7 +52034,8 @@ function (_super) {
     _this.id = 'id' + nanoid__WEBPACK_IMPORTED_MODULE_13___default()();
     _this.state = {
       options: [],
-      current: 'None'
+      current: 'None',
+      vendorName: ''
     };
 
     _this.handleSelector = function (e) {
@@ -52100,15 +52103,17 @@ function (_super) {
         }),
         target: this.id
       });
-      var perUser = {};
 
-      for (var i = 0; i < this.props.data.series[0].length; i++) {
-        (perUser[fields[0].values.buffer[i]] = perUser[fields[0].values.buffer[i]] || []).push([fields[2].values.buffer[i], fields[1].values.buffer[i]]);
-      }
+      var _b = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__["processReceivedData"])(this.props.data.series[0].length, fields),
+          perUserRoute = _b.perUserRoute,
+          perUserRouteRadius = _b.perUserRouteRadius,
+          perUserVendorName = _b.perUserVendorName;
 
-      this.perUser = perUser;
+      this.perUserRoute = perUserRoute;
+      this.perUserRouteRadius = perUserRouteRadius;
+      this.perUserVendorName = perUserVendorName;
       this.setState({
-        options: Object.keys(this.perUser)
+        options: Object.keys(this.perUserRoute)
       });
     }
 
@@ -52135,15 +52140,16 @@ function (_super) {
         });
       }
 
-      var perUser = {};
+      var _a = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__["processReceivedData"])(this.props.data.series[0].length, newFields),
+          perUserRoute = _a.perUserRoute,
+          perUserRouteRadius = _a.perUserRouteRadius,
+          perUserVendorName = _a.perUserVendorName;
 
-      for (var i = 0; i < this.props.data.series[0].length; i++) {
-        (perUser[newFields[0].values.buffer[i]] = perUser[newFields[0].values.buffer[i]] || []).push([newFields[2].values.buffer[i], newFields[1].values.buffer[i]]);
-      }
-
-      this.perUser = perUser;
+      this.perUserRoute = perUserRoute;
+      this.perUserRouteRadius = perUserRouteRadius;
+      this.perUserVendorName = perUserVendorName;
       this.setState({
-        options: Object.keys(this.perUser)
+        options: Object.keys(this.perUserRoute)
       });
     }
 
@@ -52171,50 +52177,76 @@ function (_super) {
       this.route && this.map.removeLayer(this.route);
 
       if (this.state.current !== 'None') {
-        var styles_1 = {
-          route: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
-            stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+        /*         const styles: { [key: string]: Style } = {
+          route: new Style({
+            stroke: new Stroke({
               color: '#0080ff',
-              width: 2
-            })
+              width: 2,
+            }),
           }),
-          start: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
-            image: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Circle"]({
+          start: new Style({
+            image: new Circle({
               radius: 4,
+              fill: new Fill({ color: '#26de00' }),
+            }),
+          }),
+          end: new Style({
+            image: new Circle({
+              radius: 4,
+              fill: new Fill({ color: '#feda21' }),
+            }),
+          }),
+        };
+        const routeData = this.perUser[this.state.current].map(item => fromLonLat(item));
+        this.route = new VectorLayer({
+          source: new VectorSource({
+            features: [
+              new Feature({
+                type: 'route',
+                geometry: new LineString(routeData),
+              }),
+              new Feature({
+                type: 'start',
+                geometry: new Point(routeData.slice(0, 1)[0]),
+              }),
+              new Feature({
+                type: 'end',
+                geometry: new Point(routeData.slice(-1)[0]),
+              }),
+            ],
+          }),
+          zIndex: 2,
+          style: feature => {
+            return styles[feature.get('type')];
+          },
+        }); */
+        var routeData = this.perUserRoute[this.state.current].map(function (item) {
+          return Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])(item);
+        });
+        var routeRadiusData_1 = this.perUserRouteRadius[this.state.current];
+        var routeFeature = new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"](new ol_geom_LineString__WEBPACK_IMPORTED_MODULE_6__["default"](routeData));
+        routeFeature.setStyle(new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+          stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+            color: '#0080ff',
+            width: 2
+          })
+        }));
+        var pointFeatures = routeData.map(function (coordinate, index) {
+          var singlePoint = new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"](new ol_geom_Point__WEBPACK_IMPORTED_MODULE_7__["default"](coordinate));
+          singlePoint.setStyle(new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+            image: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Circle"]({
+              radius: routeRadiusData_1[index],
               fill: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Fill"]({
                 color: '#26de00'
               })
             })
-          }),
-          end: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
-            image: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Circle"]({
-              radius: 4,
-              fill: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Fill"]({
-                color: '#feda21'
-              })
-            })
-          })
-        };
-        var routeData = this.perUser[this.state.current].map(function (item) {
-          return Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])(item);
+          }));
+          return singlePoint;
         });
         this.route = new ol_layer__WEBPACK_IMPORTED_MODULE_3__["Vector"]({
           source: new ol_source_Vector__WEBPACK_IMPORTED_MODULE_4__["default"]({
-            features: [new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"]({
-              type: 'route',
-              geometry: new ol_geom_LineString__WEBPACK_IMPORTED_MODULE_6__["default"](routeData)
-            }), new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"]({
-              type: 'start',
-              geometry: new ol_geom_Point__WEBPACK_IMPORTED_MODULE_7__["default"](routeData.slice(0, 1)[0])
-            }), new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"]({
-              type: 'end',
-              geometry: new ol_geom_Point__WEBPACK_IMPORTED_MODULE_7__["default"](routeData.slice(-1)[0])
-            })]
-          }),
-          zIndex: 2,
-          style: function style(feature) {
-            return styles_1[feature.get('type')];
-          }
+            features: Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__spread"])([routeFeature], pointFeatures)
+          })
         });
         this.map.addLayer(this.route);
       }
@@ -52304,6 +52336,36 @@ var defaults = {
   zoom_level: 18,
   max_zoom: 22,
   tile_url: ''
+};
+
+/***/ }),
+
+/***/ "./utils/helperFunc.ts":
+/*!*****************************!*\
+  !*** ./utils/helperFunc.ts ***!
+  \*****************************/
+/*! exports provided: processReceivedData */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "processReceivedData", function() { return processReceivedData; });
+var processReceivedData = function processReceivedData(length, fields) {
+  var perUserRoute = {};
+  var perUserRouteRadius = {};
+  var perUserVendorName = {};
+
+  for (var i = 0; i < length; i++) {
+    (perUserRoute[fields[0].values.buffer[i]] = perUserRoute[fields[0].values.buffer[i]] || []).push([fields[2].values.buffer[i], fields[1].values.buffer[i]]);
+    (perUserRouteRadius[fields[0].values.buffer[i]] = perUserRouteRadius[fields[0].values.buffer[i]] || []).push(fields[3].values.buffer[i]);
+    !perUserVendorName[fields[0].values.buffer[i]] ? perUserVendorName[fields[0].values.buffer[i]] = fields[4].values.buffer[i] : null;
+  }
+
+  return {
+    perUserRoute: perUserRoute,
+    perUserRouteRadius: perUserRouteRadius,
+    perUserVendorName: perUserVendorName
+  };
 };
 
 /***/ }),
