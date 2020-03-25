@@ -52229,7 +52229,8 @@ function (_super) {
           stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
             color: '#0080ff',
             width: 2
-          })
+          }),
+          zIndex: 2
         }));
         var pointFeatures = routeData.map(function (coordinate, index) {
           var singlePoint = new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"](new ol_geom_Point__WEBPACK_IMPORTED_MODULE_7__["default"](coordinate));
@@ -52239,7 +52240,8 @@ function (_super) {
               fill: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Fill"]({
                 color: '#26de00'
               })
-            })
+            }),
+            zIndex: 2
           }));
           return singlePoint;
         });
