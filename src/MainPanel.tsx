@@ -207,7 +207,6 @@ export class MainPanel extends PureComponent<Props> {
               color: '#0080ff',
               width: 2,
             }),
-            zIndex: 2,
           })
         );
 
@@ -219,7 +218,6 @@ export class MainPanel extends PureComponent<Props> {
                 radius: routeRadiusData[index],
                 fill: new Fill({ color: '#26de00' }),
               }),
-              zIndex: 2,
             })
           );
           return singlePoint;
@@ -229,6 +227,7 @@ export class MainPanel extends PureComponent<Props> {
           source: new VectorSource({
             features: [routeFeature, ...pointFeatures],
           }),
+          zIndex: 2,
         });
 
         this.map.addLayer(this.route);
