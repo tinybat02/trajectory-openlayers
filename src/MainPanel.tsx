@@ -30,6 +30,7 @@ export class MainPanel extends PureComponent<Props> {
   perUserRoute: { [key: string]: [number, number][] };
   perUserRouteRadius: { [key: string]: number[] };
   perUserVendorName: { [key: string]: string };
+  perUserTime: { [key: string]: number[] };
   route: VectorLayer;
 
   state: State = {
@@ -90,11 +91,12 @@ export class MainPanel extends PureComponent<Props> {
         target: this.id,
       });
 
-      const { perUserRoute, perUserRouteRadius, perUserVendorName } = processReceivedData(this.props.data.series[0].length, fields);
+      const { perUserRoute, perUserRouteRadius, perUserVendorName, perUserTime } = processReceivedData(this.props.data.series[0].length, fields);
 
       this.perUserRoute = perUserRoute;
       this.perUserRouteRadius = perUserRouteRadius;
       this.perUserVendorName = perUserVendorName;
+      this.perUserTime = perUserTime;
       this.setState({
         options: Object.keys(this.perUserRoute),
       });
@@ -122,11 +124,12 @@ export class MainPanel extends PureComponent<Props> {
         });
       }
 
-      const { perUserRoute, perUserRouteRadius, perUserVendorName } = processReceivedData(this.props.data.series[0].length, newFields);
+      const { perUserRoute, perUserRouteRadius, perUserVendorName, perUserTime } = processReceivedData(this.props.data.series[0].length, newFields);
 
       this.perUserRoute = perUserRoute;
       this.perUserRouteRadius = perUserRouteRadius;
       this.perUserVendorName = perUserVendorName;
+      this.perUserTime = perUserTime;
       this.setState({ options: Object.keys(this.perUserRoute) });
     }
 
@@ -216,7 +219,7 @@ export class MainPanel extends PureComponent<Props> {
             new Style({
               image: new Circle({
                 radius: routeRadiusData[index],
-                fill: new Fill({ color: '#26de00' }),
+                fill: new Fill({ color: 'rgba(73,168,222,0.6)' }),
               }),
             })
           );

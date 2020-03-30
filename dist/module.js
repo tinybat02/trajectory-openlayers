@@ -52107,11 +52107,13 @@ function (_super) {
       var _b = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__["processReceivedData"])(this.props.data.series[0].length, fields),
           perUserRoute = _b.perUserRoute,
           perUserRouteRadius = _b.perUserRouteRadius,
-          perUserVendorName = _b.perUserVendorName;
+          perUserVendorName = _b.perUserVendorName,
+          perUserTime = _b.perUserTime;
 
       this.perUserRoute = perUserRoute;
       this.perUserRouteRadius = perUserRouteRadius;
       this.perUserVendorName = perUserVendorName;
+      this.perUserTime = perUserTime;
       this.setState({
         options: Object.keys(this.perUserRoute)
       });
@@ -52143,11 +52145,13 @@ function (_super) {
       var _a = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__["processReceivedData"])(this.props.data.series[0].length, newFields),
           perUserRoute = _a.perUserRoute,
           perUserRouteRadius = _a.perUserRouteRadius,
-          perUserVendorName = _a.perUserVendorName;
+          perUserVendorName = _a.perUserVendorName,
+          perUserTime = _a.perUserTime;
 
       this.perUserRoute = perUserRoute;
       this.perUserRouteRadius = perUserRouteRadius;
       this.perUserVendorName = perUserVendorName;
+      this.perUserTime = perUserTime;
       this.setState({
         options: Object.keys(this.perUserRoute)
       });
@@ -52237,7 +52241,7 @@ function (_super) {
             image: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Circle"]({
               radius: routeRadiusData_1[index],
               fill: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Fill"]({
-                color: '#26de00'
+                color: 'rgba(73,168,222,0.6)'
               })
             })
           }));
@@ -52355,17 +52359,20 @@ var processReceivedData = function processReceivedData(length, fields) {
   var perUserRoute = {};
   var perUserRouteRadius = {};
   var perUserVendorName = {};
+  var perUserTime = {};
 
   for (var i = 0; i < length; i++) {
     (perUserRoute[fields[0].values.buffer[i]] = perUserRoute[fields[0].values.buffer[i]] || []).push([fields[2].values.buffer[i], fields[1].values.buffer[i]]);
     (perUserRouteRadius[fields[0].values.buffer[i]] = perUserRouteRadius[fields[0].values.buffer[i]] || []).push(fields[3].values.buffer[i]);
     !perUserVendorName[fields[0].values.buffer[i]] ? perUserVendorName[fields[0].values.buffer[i]] = fields[4].values.buffer[i] : null;
+    (perUserTime[fields[0].values.buffer[i]] = perUserTime[fields[0].values.buffer[i]] || []).push(fields[5].values.buffer[i]);
   }
 
   return {
     perUserRoute: perUserRoute,
     perUserRouteRadius: perUserRouteRadius,
-    perUserVendorName: perUserVendorName
+    perUserVendorName: perUserVendorName,
+    perUserTime: perUserTime
   };
 };
 
