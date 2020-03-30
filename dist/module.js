@@ -52007,6 +52007,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ol/ol.css */ "../node_modules/ol/ol.css");
 /* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(ol_ol_css__WEBPACK_IMPORTED_MODULE_15__);
 /* harmony import */ var _utils_helperFunc__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./utils/helperFunc */ "./utils/helperFunc.ts");
+/* harmony import */ var _img_arrow_png__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./img/arrow.png */ "./img/arrow.png");
+/* harmony import */ var _img_arrow_png__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_img_arrow_png__WEBPACK_IMPORTED_MODULE_17__);
+
 
 
 
@@ -52277,16 +52280,27 @@ function (_super) {
 
         if (routeData.length > 1) {
           for (var i = 0; i < routeData.length - 1; i++) {
+            var dx = routeData[i + 1][0] - routeData[i][0];
+            var dy = routeData[i + 1][1] - routeData[i][1];
+            var rotation = Math.atan2(dy, dx);
             var lineFeature = new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"](new ol_geom_LineString__WEBPACK_IMPORTED_MODULE_6__["default"]([routeData[i], routeData[i + 1]]));
             lineFeature.setProperties({
               duration: (timeData[i + 1] - timeData[i]) / 1000 + "s"
             });
-            lineFeature.setStyle(new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+            lineFeature.setStyle([new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
               stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
                 color: '#0080ff',
                 width: 2
               })
-            }));
+            }), new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+              geometry: new ol_geom_Point__WEBPACK_IMPORTED_MODULE_7__["default"](routeData[i + 1]),
+              image: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Icon"]({
+                src: _img_arrow_png__WEBPACK_IMPORTED_MODULE_17___default.a,
+                anchor: [0.75, 0.5],
+                rotateWithView: true,
+                rotation: -rotation
+              })
+            })]);
             routeFeature.push(lineFeature);
           }
         }
@@ -52356,6 +52370,17 @@ function (_super) {
 }(react__WEBPACK_IMPORTED_MODULE_1__["PureComponent"]);
 
 
+
+/***/ }),
+
+/***/ "./img/arrow.png":
+/*!***********************!*\
+  !*** ./img/arrow.png ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAYAAACk9eypAAAAXklEQVQ4T2NkIBEwwtUvevGfIU4CwcdhEEQBSDEMENCEagMRmlCdQIRNmG4moAm7J/Fowh0qODThD0YsmgiGO3qQU9EGkvxAUiiRFA8kxTQRikFJjcLUSnR+ICHXAQCrEDMUINeb/gAAAABJRU5ErkJggg=="
 
 /***/ }),
 

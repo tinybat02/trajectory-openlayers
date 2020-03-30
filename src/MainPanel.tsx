@@ -7,7 +7,7 @@ import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import LineString from 'ol/geom/LineString';
 import Point from 'ol/geom/Point';
-import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
+import { Circle, Fill, Stroke, Style, Text, Icon } from 'ol/style';
 import XYZ from 'ol/source/XYZ';
 import { fromLonLat } from 'ol/proj';
 import { defaults, DragPan, MouseWheelZoom } from 'ol/interaction';
@@ -17,6 +17,7 @@ import { pointerMove } from 'ol/events/condition';
 import nanoid from 'nanoid';
 import 'ol/ol.css';
 import { processReceivedData } from './utils/helperFunc';
+import Arrow from './img/arrow.png';
 
 /* const geometryStyle = (feature: Feature) => {
   var style: { [key: string]: Style[] } = {},
@@ -299,16 +300,29 @@ export class MainPanel extends PureComponent<Props> {
         let routeFeature: Feature[] = [];
         if (routeData.length > 1) {
           for (let i = 0; i < routeData.length - 1; i++) {
+            const dx = routeData[i + 1][0] - routeData[i][0];
+            const dy = routeData[i + 1][1] - routeData[i][1];
+            const rotation = Math.atan2(dy, dx);
             const lineFeature = new Feature(new LineString([routeData[i], routeData[i + 1]]));
             lineFeature.setProperties({ duration: `${(timeData[i + 1] - timeData[i]) / 1000}s` });
-            lineFeature.setStyle(
+
+            lineFeature.setStyle([
               new Style({
                 stroke: new Stroke({
                   color: '#0080ff',
                   width: 2,
                 }),
-              })
-            );
+              }),
+              new Style({
+                geometry: new Point(routeData[i + 1]),
+                image: new Icon({
+                  src: Arrow,
+                  anchor: [0.75, 0.5],
+                  rotateWithView: true,
+                  rotation: -rotation,
+                }),
+              }),
+            ]);
             routeFeature.push(lineFeature);
           }
         }
