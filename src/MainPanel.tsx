@@ -7,14 +7,62 @@ import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import LineString from 'ol/geom/LineString';
 import Point from 'ol/geom/Point';
-import { Circle, Fill, Stroke, Style } from 'ol/style';
+import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 import XYZ from 'ol/source/XYZ';
 import { fromLonLat } from 'ol/proj';
 import { defaults, DragPan, MouseWheelZoom } from 'ol/interaction';
 import { platformModifierKeyOnly } from 'ol/events/condition';
+import Select from 'ol/interaction/Select';
+import { pointerMove } from 'ol/events/condition';
 import nanoid from 'nanoid';
 import 'ol/ol.css';
 import { processReceivedData } from './utils/helperFunc';
+
+/* const geometryStyle = (feature: Feature) => {
+  var style: { [key: string]: Style[] } = {},
+    geometry_type = feature.getGeometry().getType(),
+    white = [255, 255, 255, 1],
+    blue = [0, 153, 255, 1],
+    width = 6;
+
+  style['LineString'] = [
+    new Style({
+      stroke: new Stroke({
+        color: white,
+        width: width + 2,
+      }),
+      text: new Text({
+        stroke: new Stroke({
+          color: '#fff',
+          width: 2,
+        }),
+        font: '18px Calibri,sans-serif',
+        text: feature.get('name'),
+      }),
+    }),
+    new Style({
+      stroke: new Stroke({
+        color: blue,
+        width: width,
+      }),
+    }),
+  ];
+
+  style['Point'] = [
+    new Style({
+      image: new Circle({
+        radius: width * 2,
+        fill: new Fill({ color: blue }),
+        stroke: new Stroke({
+          color: white,
+          width: width / 2,
+        }),
+      }),
+    }),
+  ];
+
+  return style[geometry_type];
+}; */
 
 interface Props extends PanelProps<MapOptions> {}
 interface State {
@@ -90,6 +138,42 @@ export class MainPanel extends PureComponent<Props> {
         }),
         target: this.id,
       });
+      const hoverInteraction = new Select({
+        condition: pointerMove,
+        style: function(feature) {
+          const style: { [key: string]: Style[] } = {};
+          const geometry_type = feature.getGeometry().getType(),
+            white = [255, 255, 255, 1],
+            blue = [0, 153, 255, 1],
+            width = 4;
+
+          style['LineString'] = [
+            new Style({
+              stroke: new Stroke({
+                color: white,
+                width: width + 2,
+              }),
+              text: new Text({
+                stroke: new Stroke({
+                  color: '#fff',
+                  width: 2,
+                }),
+                font: '18px Calibri,sans-serif',
+                text: feature.get('duration'),
+              }),
+            }),
+            new Style({
+              stroke: new Stroke({
+                color: blue,
+                width: width,
+              }),
+            }),
+          ];
+
+          return style[geometry_type];
+        },
+      });
+      this.map.addInteraction(hoverInteraction);
 
       const { perUserRoute, perUserRouteRadius, perUserVendorName, perUserTime } = processReceivedData(this.props.data.series[0].length, fields);
 
@@ -201,9 +285,9 @@ export class MainPanel extends PureComponent<Props> {
           },
         }); */
         const routeData = this.perUserRoute[this.state.current].map(item => fromLonLat(item));
+        const timeData = this.perUserTime[this.state.current];
         const routeRadiusData = this.perUserRouteRadius[this.state.current];
-
-        const routeFeature = new Feature(new LineString(routeData));
+        /* const routeFeature = new Feature(new LineString(routeData));
         routeFeature.setStyle(
           new Style({
             stroke: new Stroke({
@@ -211,7 +295,23 @@ export class MainPanel extends PureComponent<Props> {
               width: 2,
             }),
           })
-        );
+        ); */
+        let routeFeature: Feature[] = [];
+        if (routeData.length > 1) {
+          for (let i = 0; i < routeData.length - 1; i++) {
+            const lineFeature = new Feature(new LineString([routeData[i], routeData[i + 1]]));
+            lineFeature.setProperties({ duration: `${(timeData[i + 1] - timeData[i]) / 1000}s` });
+            lineFeature.setStyle(
+              new Style({
+                stroke: new Stroke({
+                  color: '#0080ff',
+                  width: 2,
+                }),
+              })
+            );
+            routeFeature.push(lineFeature);
+          }
+        }
 
         const pointFeatures = routeData.map((coordinate, index) => {
           const singlePoint = new Feature(new Point(coordinate));
@@ -228,7 +328,7 @@ export class MainPanel extends PureComponent<Props> {
 
         this.route = new VectorLayer({
           source: new VectorSource({
-            features: [routeFeature, ...pointFeatures],
+            features: [...routeFeature, ...pointFeatures],
           }),
           zIndex: 2,
         });

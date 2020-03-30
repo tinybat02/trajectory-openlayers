@@ -52001,11 +52001,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var ol_proj__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ol/proj */ "../node_modules/ol/proj.js");
 /* harmony import */ var ol_interaction__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ol/interaction */ "../node_modules/ol/interaction.js");
 /* harmony import */ var ol_events_condition__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ol/events/condition */ "../node_modules/ol/events/condition.js");
-/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! nanoid */ "../node_modules/nanoid/index.browser.js");
-/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(nanoid__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ol/ol.css */ "../node_modules/ol/ol.css");
-/* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(ol_ol_css__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var _utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./utils/helperFunc */ "./utils/helperFunc.ts");
+/* harmony import */ var ol_interaction_Select__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ol/interaction/Select */ "../node_modules/ol/interaction/Select.js");
+/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! nanoid */ "../node_modules/nanoid/index.browser.js");
+/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(nanoid__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ol/ol.css */ "../node_modules/ol/ol.css");
+/* harmony import */ var ol_ol_css__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(ol_ol_css__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var _utils_helperFunc__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./utils/helperFunc */ "./utils/helperFunc.ts");
+
+
 
 
 
@@ -52031,7 +52034,7 @@ function (_super) {
   function MainPanel() {
     var _this = _super !== null && _super.apply(this, arguments) || this;
 
-    _this.id = 'id' + nanoid__WEBPACK_IMPORTED_MODULE_13___default()();
+    _this.id = 'id' + nanoid__WEBPACK_IMPORTED_MODULE_14___default()();
     _this.state = {
       options: [],
       current: 'None',
@@ -52103,8 +52106,39 @@ function (_super) {
         }),
         target: this.id
       });
+      var hoverInteraction = new ol_interaction_Select__WEBPACK_IMPORTED_MODULE_13__["default"]({
+        condition: ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["pointerMove"],
+        style: function style(feature) {
+          var style = {};
+          var geometry_type = feature.getGeometry().getType(),
+              white = [255, 255, 255, 1],
+              blue = [0, 153, 255, 1],
+              width = 4;
+          style['LineString'] = [new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+            stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+              color: white,
+              width: width + 2
+            }),
+            text: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Text"]({
+              stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+                color: '#fff',
+                width: 2
+              }),
+              font: '18px Calibri,sans-serif',
+              text: feature.get('duration')
+            })
+          }), new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+            stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+              color: blue,
+              width: width
+            })
+          })];
+          return style[geometry_type];
+        }
+      });
+      this.map.addInteraction(hoverInteraction);
 
-      var _b = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__["processReceivedData"])(this.props.data.series[0].length, fields),
+      var _b = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_16__["processReceivedData"])(this.props.data.series[0].length, fields),
           perUserRoute = _b.perUserRoute,
           perUserRouteRadius = _b.perUserRouteRadius,
           perUserVendorName = _b.perUserVendorName,
@@ -52142,7 +52176,7 @@ function (_super) {
         });
       }
 
-      var _a = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_15__["processReceivedData"])(this.props.data.series[0].length, newFields),
+      var _a = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_16__["processReceivedData"])(this.props.data.series[0].length, newFields),
           perUserRoute = _a.perUserRoute,
           perUserRouteRadius = _a.perUserRouteRadius,
           perUserVendorName = _a.perUserVendorName,
@@ -52227,14 +52261,36 @@ function (_super) {
         var routeData = this.perUserRoute[this.state.current].map(function (item) {
           return Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])(item);
         });
+        var timeData = this.perUserTime[this.state.current];
         var routeRadiusData_1 = this.perUserRouteRadius[this.state.current];
-        var routeFeature = new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"](new ol_geom_LineString__WEBPACK_IMPORTED_MODULE_6__["default"](routeData));
-        routeFeature.setStyle(new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
-          stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
-            color: '#0080ff',
-            width: 2
+        /* const routeFeature = new Feature(new LineString(routeData));
+        routeFeature.setStyle(
+          new Style({
+            stroke: new Stroke({
+              color: '#0080ff',
+              width: 2,
+            }),
           })
-        }));
+        ); */
+
+        var routeFeature = [];
+
+        if (routeData.length > 1) {
+          for (var i = 0; i < routeData.length - 1; i++) {
+            var lineFeature = new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"](new ol_geom_LineString__WEBPACK_IMPORTED_MODULE_6__["default"]([routeData[i], routeData[i + 1]]));
+            lineFeature.setProperties({
+              duration: (timeData[i + 1] - timeData[i]) / 1000 + "s"
+            });
+            lineFeature.setStyle(new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+              stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+                color: '#0080ff',
+                width: 2
+              })
+            }));
+            routeFeature.push(lineFeature);
+          }
+        }
+
         var pointFeatures = routeData.map(function (coordinate, index) {
           var singlePoint = new ol_Feature__WEBPACK_IMPORTED_MODULE_5__["default"](new ol_geom_Point__WEBPACK_IMPORTED_MODULE_7__["default"](coordinate));
           singlePoint.setStyle(new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
@@ -52249,7 +52305,7 @@ function (_super) {
         });
         this.route = new ol_layer__WEBPACK_IMPORTED_MODULE_3__["Vector"]({
           source: new ol_source_Vector__WEBPACK_IMPORTED_MODULE_4__["default"]({
-            features: Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__spread"])([routeFeature], pointFeatures)
+            features: Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__spread"])(routeFeature, pointFeatures)
           }),
           zIndex: 2
         });
