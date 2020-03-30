@@ -257,7 +257,7 @@ export class MainPanel extends PureComponent<Props> {
           <option value="None">None</option>
           {options.map(item => (
             <option key={item} value={item}>
-              {item}
+              {`${item.slice(0, 8)} - ${this.perUserVendorName[item]}`}
             </option>
           ))}
         </select>

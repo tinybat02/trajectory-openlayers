@@ -52259,6 +52259,8 @@ function (_super) {
   };
 
   MainPanel.prototype.render = function () {
+    var _this = this;
+
     var _a = this.props,
         width = _a.width,
         height = _a.height;
@@ -52284,7 +52286,7 @@ function (_super) {
       return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("option", {
         key: item,
         value: item
-      }, item);
+      }, item.slice(0, 8) + " - " + _this.perUserVendorName[item]);
     })), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
       id: this.id,
       style: {
