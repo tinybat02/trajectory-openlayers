@@ -52040,8 +52040,7 @@ function (_super) {
     _this.id = 'id' + nanoid__WEBPACK_IMPORTED_MODULE_14___default()();
     _this.state = {
       options: [],
-      current: 'None',
-      vendorName: ''
+      current: 'None'
     };
 
     _this.handleSelector = function (e) {
@@ -52065,82 +52064,82 @@ function (_super) {
       source: new ol_source_XYZ__WEBPACK_IMPORTED_MODULE_9__["default"]({
         url: 'https://{1-4}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
       })
-    });
+    }); //    if (fields[2].values.buffer.length === 0) {
 
-    if (fields[2].values.buffer.length === 0) {
-      this.map = new ol__WEBPACK_IMPORTED_MODULE_2__["Map"]({
-        interactions: Object(ol_interaction__WEBPACK_IMPORTED_MODULE_11__["defaults"])({
-          dragPan: false,
-          mouseWheelZoom: false,
-          onFocusOnly: true
-        }).extend([new ol_interaction__WEBPACK_IMPORTED_MODULE_11__["DragPan"]({
-          condition: function condition(event) {
-            return Object(ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["platformModifierKeyOnly"])(event) || this.getPointerCount() === 2;
-          }
-        }), new ol_interaction__WEBPACK_IMPORTED_MODULE_11__["MouseWheelZoom"]({
-          condition: ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["platformModifierKeyOnly"]
-        })]),
-        layers: [carto],
-        view: new ol__WEBPACK_IMPORTED_MODULE_2__["View"]({
-          center: Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])([center_lon, center_lat]),
-          zoom: zoom_level,
-          maxZoom: max_zoom
-        }),
-        target: this.id
-      });
-    } else {
-      this.map = new ol__WEBPACK_IMPORTED_MODULE_2__["Map"]({
-        interactions: Object(ol_interaction__WEBPACK_IMPORTED_MODULE_11__["defaults"])({
-          dragPan: false,
-          mouseWheelZoom: false,
-          onFocusOnly: true
-        }).extend([new ol_interaction__WEBPACK_IMPORTED_MODULE_11__["DragPan"]({
-          condition: function condition(event) {
-            return Object(ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["platformModifierKeyOnly"])(event) || this.getPointerCount() === 2;
-          }
-        }), new ol_interaction__WEBPACK_IMPORTED_MODULE_11__["MouseWheelZoom"]({
-          condition: ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["platformModifierKeyOnly"]
-        })]),
-        layers: [carto],
-        view: new ol__WEBPACK_IMPORTED_MODULE_2__["View"]({
-          center: Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])([fields[2].values.buffer[0], fields[1].values.buffer[0]]),
-          zoom: zoom_level,
-          maxZoom: max_zoom
-        }),
-        target: this.id
-      });
-      var hoverInteraction = new ol_interaction_Select__WEBPACK_IMPORTED_MODULE_13__["default"]({
-        condition: ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["pointerMove"],
-        style: function style(feature) {
-          var style = {};
-          var geometry_type = feature.getGeometry().getType(),
-              white = [255, 255, 255, 1],
-              blue = [0, 153, 255, 1],
-              width = 4;
-          style['LineString'] = [new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
-            stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
-              color: white,
-              width: width + 2
-            }),
-            text: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Text"]({
-              stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
-                color: '#fff',
-                width: 2
-              }),
-              font: '18px Calibri,sans-serif',
-              text: feature.get('duration')
-            })
-          }), new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
-            stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
-              color: blue,
-              width: width
-            })
-          })];
-          return style[geometry_type];
+    this.map = new ol__WEBPACK_IMPORTED_MODULE_2__["Map"]({
+      interactions: Object(ol_interaction__WEBPACK_IMPORTED_MODULE_11__["defaults"])({
+        dragPan: false,
+        mouseWheelZoom: false,
+        onFocusOnly: true
+      }).extend([new ol_interaction__WEBPACK_IMPORTED_MODULE_11__["DragPan"]({
+        condition: function condition(event) {
+          return Object(ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["platformModifierKeyOnly"])(event) || this.getPointerCount() === 2;
         }
-      });
-      this.map.addInteraction(hoverInteraction);
+      }), new ol_interaction__WEBPACK_IMPORTED_MODULE_11__["MouseWheelZoom"]({
+        condition: ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["platformModifierKeyOnly"]
+      })]),
+      layers: [carto],
+      view: new ol__WEBPACK_IMPORTED_MODULE_2__["View"]({
+        center: Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])([center_lon, center_lat]),
+        zoom: zoom_level,
+        maxZoom: max_zoom
+      }),
+      target: this.id
+    });
+    /*     } else {
+      this.map = new Map({
+        interactions: defaults({ dragPan: false, mouseWheelZoom: false, onFocusOnly: true }).extend([
+          new DragPan({
+            condition: function(event) {
+              return platformModifierKeyOnly(event) || this.getPointerCount() === 2;
+            },
+          }),
+          new MouseWheelZoom({
+            condition: platformModifierKeyOnly,
+          }),
+        ]),
+        layers: [carto],
+        view: new View({
+          center: fromLonLat([fields[2].values.buffer[0], fields[1].values.buffer[0]]),
+          zoom: zoom_level,
+          maxZoom: max_zoom,
+        }),
+        target: this.id,
+      }); */
 
+    var hoverInteraction = new ol_interaction_Select__WEBPACK_IMPORTED_MODULE_13__["default"]({
+      condition: ol_events_condition__WEBPACK_IMPORTED_MODULE_12__["pointerMove"],
+      style: function style(feature) {
+        var style = {};
+        var geometry_type = feature.getGeometry().getType(),
+            white = [255, 255, 255, 1],
+            blue = [0, 153, 255, 1],
+            width = 4;
+        style['LineString'] = [new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+          stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+            color: white,
+            width: width + 2
+          }),
+          text: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Text"]({
+            stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+              color: '#fff',
+              width: 2
+            }),
+            font: '18px Calibri,sans-serif',
+            text: feature.get('duration')
+          })
+        }), new ol_style__WEBPACK_IMPORTED_MODULE_8__["Style"]({
+          stroke: new ol_style__WEBPACK_IMPORTED_MODULE_8__["Stroke"]({
+            color: blue,
+            width: width
+          })
+        })];
+        return style[geometry_type];
+      }
+    });
+    this.map.addInteraction(hoverInteraction);
+
+    if (fields[2].values.buffer.length !== 0) {
       var _b = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_16__["processReceivedData"])(this.props.data.series[0].length, fields),
           perUserRoute = _b.perUserRoute,
           perUserRouteRadius = _b.perUserRouteRadius,
@@ -52169,29 +52168,36 @@ function (_super) {
 
   MainPanel.prototype.componentDidUpdate = function (prevProps, prevState) {
     if (prevProps.data.series[0] !== this.props.data.series[0]) {
-      var prevFields = prevProps.data.series[0].fields;
+      //const prevFields = prevProps.data.series[0].fields as FieldBuffer[];
       var newFields = this.props.data.series[0].fields;
-
-      if (prevFields[1].values.buffer.length === 0 && newFields[1].values.buffer.length !== 0) {
+      /*       if (prevFields[1].values.buffer.length === 0 && newFields[1].values.buffer.length !== 0) {
         this.map.getView().animate({
-          center: Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])([newFields[2].values.buffer[0], newFields[1].values.buffer[0]]),
-          duration: 2000
+          center: fromLonLat([newFields[2].values.buffer[0], newFields[1].values.buffer[0]]),
+          duration: 2000,
+        });
+      } */
+
+      if (newFields[1].values.buffer.length !== 0) {
+        var _a = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_16__["processReceivedData"])(this.props.data.series[0].length, newFields),
+            perUserRoute = _a.perUserRoute,
+            perUserRouteRadius = _a.perUserRouteRadius,
+            perUserVendorName = _a.perUserVendorName,
+            perUserTime = _a.perUserTime;
+
+        this.perUserRoute = perUserRoute;
+        this.perUserRouteRadius = perUserRouteRadius;
+        this.perUserVendorName = perUserVendorName;
+        this.perUserTime = perUserTime;
+        this.setState({
+          options: Object.keys(this.perUserRoute)
+        });
+      } else {
+        this.map.removeLayer(this.route);
+        this.setState({
+          options: [],
+          current: 'None'
         });
       }
-
-      var _a = Object(_utils_helperFunc__WEBPACK_IMPORTED_MODULE_16__["processReceivedData"])(this.props.data.series[0].length, newFields),
-          perUserRoute = _a.perUserRoute,
-          perUserRouteRadius = _a.perUserRouteRadius,
-          perUserVendorName = _a.perUserVendorName,
-          perUserTime = _a.perUserTime;
-
-      this.perUserRoute = perUserRoute;
-      this.perUserRouteRadius = perUserRouteRadius;
-      this.perUserVendorName = perUserVendorName;
-      this.perUserTime = perUserTime;
-      this.setState({
-        options: Object.keys(this.perUserRoute)
-      });
     }
 
     if (prevProps.options.tile_url !== this.props.options.tile_url) {

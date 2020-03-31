@@ -19,57 +19,10 @@ import 'ol/ol.css';
 import { processReceivedData } from './utils/helperFunc';
 import Arrow from './img/arrow.png';
 
-/* const geometryStyle = (feature: Feature) => {
-  var style: { [key: string]: Style[] } = {},
-    geometry_type = feature.getGeometry().getType(),
-    white = [255, 255, 255, 1],
-    blue = [0, 153, 255, 1],
-    width = 6;
-
-  style['LineString'] = [
-    new Style({
-      stroke: new Stroke({
-        color: white,
-        width: width + 2,
-      }),
-      text: new Text({
-        stroke: new Stroke({
-          color: '#fff',
-          width: 2,
-        }),
-        font: '18px Calibri,sans-serif',
-        text: feature.get('name'),
-      }),
-    }),
-    new Style({
-      stroke: new Stroke({
-        color: blue,
-        width: width,
-      }),
-    }),
-  ];
-
-  style['Point'] = [
-    new Style({
-      image: new Circle({
-        radius: width * 2,
-        fill: new Fill({ color: blue }),
-        stroke: new Stroke({
-          color: white,
-          width: width / 2,
-        }),
-      }),
-    }),
-  ];
-
-  return style[geometry_type];
-}; */
-
 interface Props extends PanelProps<MapOptions> {}
 interface State {
   options: string[];
   current: string;
-  vendorName: string;
 }
 
 export class MainPanel extends PureComponent<Props> {
@@ -85,7 +38,6 @@ export class MainPanel extends PureComponent<Props> {
   state: State = {
     options: [],
     current: 'None',
-    vendorName: '',
   };
 
   componentDidMount() {
@@ -98,28 +50,27 @@ export class MainPanel extends PureComponent<Props> {
         url: 'https://{1-4}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
       }),
     });
-
-    if (fields[2].values.buffer.length === 0) {
-      this.map = new Map({
-        interactions: defaults({ dragPan: false, mouseWheelZoom: false, onFocusOnly: true }).extend([
-          new DragPan({
-            condition: function(event) {
-              return platformModifierKeyOnly(event) || this.getPointerCount() === 2;
-            },
-          }),
-          new MouseWheelZoom({
-            condition: platformModifierKeyOnly,
-          }),
-        ]),
-        layers: [carto],
-        view: new View({
-          center: fromLonLat([center_lon, center_lat]),
-          zoom: zoom_level,
-          maxZoom: max_zoom,
+    //    if (fields[2].values.buffer.length === 0) {
+    this.map = new Map({
+      interactions: defaults({ dragPan: false, mouseWheelZoom: false, onFocusOnly: true }).extend([
+        new DragPan({
+          condition: function(event) {
+            return platformModifierKeyOnly(event) || this.getPointerCount() === 2;
+          },
         }),
-        target: this.id,
-      });
-    } else {
+        new MouseWheelZoom({
+          condition: platformModifierKeyOnly,
+        }),
+      ]),
+      layers: [carto],
+      view: new View({
+        center: fromLonLat([center_lon, center_lat]),
+        zoom: zoom_level,
+        maxZoom: max_zoom,
+      }),
+      target: this.id,
+    });
+    /*     } else {
       this.map = new Map({
         interactions: defaults({ dragPan: false, mouseWheelZoom: false, onFocusOnly: true }).extend([
           new DragPan({
@@ -138,44 +89,44 @@ export class MainPanel extends PureComponent<Props> {
           maxZoom: max_zoom,
         }),
         target: this.id,
-      });
-      const hoverInteraction = new Select({
-        condition: pointerMove,
-        style: function(feature) {
-          const style: { [key: string]: Style[] } = {};
-          const geometry_type = feature.getGeometry().getType(),
-            white = [255, 255, 255, 1],
-            blue = [0, 153, 255, 1],
-            width = 4;
+      }); */
+    const hoverInteraction = new Select({
+      condition: pointerMove,
+      style: function(feature) {
+        const style: { [key: string]: Style[] } = {};
+        const geometry_type = feature.getGeometry().getType(),
+          white = [255, 255, 255, 1],
+          blue = [0, 153, 255, 1],
+          width = 4;
 
-          style['LineString'] = [
-            new Style({
-              stroke: new Stroke({
-                color: white,
-                width: width + 2,
-              }),
-              text: new Text({
-                stroke: new Stroke({
-                  color: '#fff',
-                  width: 2,
-                }),
-                font: '18px Calibri,sans-serif',
-                text: feature.get('duration'),
-              }),
+        style['LineString'] = [
+          new Style({
+            stroke: new Stroke({
+              color: white,
+              width: width + 2,
             }),
-            new Style({
+            text: new Text({
               stroke: new Stroke({
-                color: blue,
-                width: width,
+                color: '#fff',
+                width: 2,
               }),
+              font: '18px Calibri,sans-serif',
+              text: feature.get('duration'),
             }),
-          ];
+          }),
+          new Style({
+            stroke: new Stroke({
+              color: blue,
+              width: width,
+            }),
+          }),
+        ];
 
-          return style[geometry_type];
-        },
-      });
-      this.map.addInteraction(hoverInteraction);
-
+        return style[geometry_type];
+      },
+    });
+    this.map.addInteraction(hoverInteraction);
+    if (fields[2].values.buffer.length !== 0) {
       const { perUserRoute, perUserRouteRadius, perUserVendorName, perUserTime } = processReceivedData(this.props.data.series[0].length, fields);
 
       this.perUserRoute = perUserRoute;
@@ -200,22 +151,31 @@ export class MainPanel extends PureComponent<Props> {
 
   componentDidUpdate(prevProps: Props, prevState: State) {
     if (prevProps.data.series[0] !== this.props.data.series[0]) {
-      const prevFields = prevProps.data.series[0].fields as FieldBuffer[];
+      //const prevFields = prevProps.data.series[0].fields as FieldBuffer[];
       const newFields = this.props.data.series[0].fields as FieldBuffer[];
-      if (prevFields[1].values.buffer.length === 0 && newFields[1].values.buffer.length !== 0) {
+      /*       if (prevFields[1].values.buffer.length === 0 && newFields[1].values.buffer.length !== 0) {
         this.map.getView().animate({
           center: fromLonLat([newFields[2].values.buffer[0], newFields[1].values.buffer[0]]),
           duration: 2000,
         });
+      } */
+
+      if (newFields[1].values.buffer.length !== 0) {
+        const { perUserRoute, perUserRouteRadius, perUserVendorName, perUserTime } = processReceivedData(this.props.data.series[0].length, newFields);
+
+        this.perUserRoute = perUserRoute;
+        this.perUserRouteRadius = perUserRouteRadius;
+        this.perUserVendorName = perUserVendorName;
+        this.perUserTime = perUserTime;
+        this.setState({ options: Object.keys(this.perUserRoute) });
+      } else {
+        this.map.removeLayer(this.route);
+
+        this.setState({
+          options: [],
+          current: 'None',
+        });
       }
-
-      const { perUserRoute, perUserRouteRadius, perUserVendorName, perUserTime } = processReceivedData(this.props.data.series[0].length, newFields);
-
-      this.perUserRoute = perUserRoute;
-      this.perUserRouteRadius = perUserRouteRadius;
-      this.perUserVendorName = perUserVendorName;
-      this.perUserTime = perUserTime;
-      this.setState({ options: Object.keys(this.perUserRoute) });
     }
 
     if (prevProps.options.tile_url !== this.props.options.tile_url) {
