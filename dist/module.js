@@ -52220,6 +52220,13 @@ function (_super) {
       this.map.getView().setZoom(this.props.options.zoom_level);
     }
 
+    if (prevProps.options.center_lat !== this.props.options.center_lat || prevProps.options.center_lon !== this.props.options.center_lon) {
+      this.map.getView().animate({
+        center: Object(ol_proj__WEBPACK_IMPORTED_MODULE_10__["fromLonLat"])([this.props.options.center_lon, this.props.options.center_lat]),
+        duration: 2000
+      });
+    }
+
     if (prevState.current !== this.state.current) {
       this.route && this.map.removeLayer(this.route);
 
