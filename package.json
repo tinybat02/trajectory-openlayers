@@ -12,7 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "@grafana/data": "next",
-    "@grafana/toolkit": "next",
+    "@grafana/toolkit": "^6.7.2",
     "@grafana/ui": "next"
   },
   "dependencies": {
